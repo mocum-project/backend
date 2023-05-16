@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "foreignKeys"
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  nickname String
+  kakaoId  BigInt   @unique
+  reviews  Review[]
+}
+
+model Restaurant {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?   @db.Text
+  imageUrl    String?
+  address     String? // 주소명 ex. 서울 서대문구 명지대길 80-7
+  category    Category  @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  location    Location?
+  reviews     Review[]
+}
+
+model Location {
+  id           Int        @id @default(autoincrement())
+  latitude     Decimal // 위도
+  longitude    Decimal // 경도
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int        @unique
+}
+
+model Review {
+  id           Int        @id @default(autoincrement())
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId Int
+}
+
+model Category {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  restaurants Restaurant[]
+}
