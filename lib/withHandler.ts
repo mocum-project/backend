@@ -20,9 +20,10 @@ function withHandler({ methods, handler }: ConfigType) {
     }
 
     try {
-      handler(req, res);
+      await handler(req, res);
     } catch (error) {
       console.log(error);
+
       return res.status(500).json({ isSuccess: false, message: '서버 작동 오류', result: {} });
     }
   };
