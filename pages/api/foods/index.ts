@@ -6,7 +6,6 @@ import client from '@/lib/prismaClient';
 
 async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType>) {
   const { userId } = req.headers;
-
   const foods = await client.storedFood.findMany({
     where: {
       userId: Number(userId),
@@ -40,7 +39,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType
     }
   });
 
-  res.json({
+  res.status(200).json({
     isSuccess: true,
     message: '성공적으로 조회되었습니다.',
     result: {
