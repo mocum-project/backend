@@ -51,9 +51,7 @@ function withHandler({ methods, privateMethods, handler }: ConfigType) {
     try {
       await handler(req, res);
     } catch (error) {
-      console.log(error);
-
-      return res.status(500).json({ isSuccess: false, message: '서버 작동 오류', result: {} });
+      return res.status(500).json({ isSuccess: false, message: String(error), result: {} });
     }
   };
 }
