@@ -1,5 +1,5 @@
 import withHandler from '@/lib/withHandler';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import AppResponseType from '@/types/appResponseType';
@@ -10,10 +10,6 @@ import { User } from '@prisma/client';
 // 2. MySQL DB에서 회원 정보 확인 (카카오 아이디)
 // 3. 존재하지 않는 회원이면 회원 생성
 // 4. jwt 생성&반환
-
-type RequestType = {
-  accessToken: string;
-};
 
 interface KakaoUserInfoResponse {
   id: bigint; // 회원번호
@@ -34,7 +30,7 @@ async function getUserInfoFromKakao(accessToken: string): Promise<KakaoUserInfoR
   return response.data;
 }
 
-async function getExistUserFromDB(kakaoId: bigint) {
+async function getExistUserFromDB(kakaoId: string) {
   const user = await client.user.findUnique({
     where: {
       kakaoId,
@@ -43,7 +39,7 @@ async function getExistUserFromDB(kakaoId: bigint) {
   return user;
 }
 
-async function makeNewUserFromDB(kakaoId: bigint, nickname: string) {
+async function makeNewUserFromDB(kakaoId: string, nickname: string) {
   const newUser = await client.user.create({
     data: {
       nickname,
@@ -64,17 +60,17 @@ function makeJwtToken(payload: string | object) {
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType>) {
-  const { accessToken }: RequestType = req.body;
+  const { kakaoAccessToken } = req.headers;
   try {
     const {
       id: kakaoId,
       kakao_account: {
         profile: { nickname },
       },
-    } = await getUserInfoFromKakao(accessToken);
-    let user = await getExistUserFromDB(kakaoId);
+    } = await getUserInfoFromKakao(kakaoAccessToken as string);
+    let user = await getExistUserFromDB(String(kakaoId));
     if (!user) {
-      user = await makeNewUserFromDB(kakaoId, nickname);
+      user = await makeNewUserFromDB(String(kakaoId), nickname);
     }
     const jwtToken = makeJwtToken({ nickname });
 
@@ -92,4 +88,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType
   }
 }
 
-export default withHandler({ methods: ['POST', 'GET'], handler });
+export default withHandler({ methods: ['POST'], handler });
