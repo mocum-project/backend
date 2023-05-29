@@ -3,41 +3,34 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import withHandler from '@/lib/withHandler';
 
 import client from '@/lib/prismaClient';
-import { FoodStorageArea } from '@prisma/client';
+import { StorageArea } from '@prisma/client';
 
 async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType>) {
   const { userId } = req.headers;
   if (req.method === 'GET') {
-    const foods = await client.storedFood.findMany({
+    const ingredients = await client.storedIngredient.findMany({
       where: {
         userId: Number(userId),
       },
       select: {
         id: true,
-        foodName: true,
+        name: true,
+        category: true,
         storageArea: true,
         count: true,
         expirationDate: true,
-        FoodCategory: { select: { category: true } },
       },
     });
 
-    const foodsResponse = foods.map((food) => {
-      const {
-        id,
-        foodName,
-        storageArea,
-        count,
-        expirationDate,
-        FoodCategory: { category },
-      } = food;
-      return { id, foodName, storageArea, count, expirationDate, category };
+    const ingredientsResponse = ingredients.map((ingredient) => {
+      const { id, name, category, storageArea, count, expirationDate } = ingredient;
+      return { id, name, category, storageArea, count, expirationDate };
     });
 
     const categories: string[] = [];
-    foodsResponse.forEach((food) => {
-      if (!categories.includes(food.category)) {
-        categories.push(food.category);
+    ingredientsResponse.forEach((ingredient) => {
+      if (!categories.includes(ingredient.category)) {
+        categories.push(ingredient.category);
       }
     });
 
@@ -46,14 +39,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType
       message: '성공적으로 조회되었습니다.',
       result: {
         categories,
-        foods: foodsResponse,
+        ingredients: ingredientsResponse,
       },
     });
   } else if (req.method === 'POST') {
-    const { foodName, storageArea, count, expirationDate } = req.body;
+    const { name, category, storageArea, count, expirationDate } = req.body;
+
     if (
-      typeof foodName !== 'string' ||
-      !Object.keys(FoodStorageArea).includes(storageArea) ||
+      typeof name !== 'string' ||
+      typeof category !== 'string' ||
+      !Object.keys(StorageArea).includes(storageArea) ||
       typeof count !== 'number' ||
       typeof expirationDate !== 'string'
     ) {
@@ -63,10 +58,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType
         result: {},
       });
     }
-    await client.storedFood.create({
+    await client.storedIngredient.create({
       data: {
         userId: Number(userId),
-        foodName,
+        name,
+        category,
         storageArea,
         count,
         expirationDate,
@@ -74,11 +70,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType
     });
     return res.status(200).json({ isSuccess: true, message: '성공적으로 추가되었습니다.', result: {} });
   } else if (req.method === 'PUT') {
-    const { id, foodName, storageArea, count, expirationDate } = req.body;
+    const { id, name, category, storageArea, count, expirationDate } = req.body;
     if (
       typeof id !== 'number' ||
-      typeof foodName !== 'string' ||
-      !Object.keys(FoodStorageArea).includes(storageArea) ||
+      typeof name !== 'string' ||
+      typeof category !== 'string' ||
+      !Object.keys(StorageArea).includes(storageArea) ||
       typeof count !== 'number' ||
       typeof expirationDate !== 'string'
     ) {
@@ -88,9 +85,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType
         result: {},
       });
     }
-    await client.storedFood.update({
+    await client.storedIngredient.update({
       data: {
-        foodName,
+        name,
+        category,
         storageArea,
         count,
         expirationDate,
@@ -103,12 +101,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType
     if (!id) {
       return res.status(400).json({
         isSuccess: false,
-        message: '아이디를 전달받지 못함',
+        message: '식재료 ID를 전달받지 못함',
         result: {},
       });
     }
 
-    await client.storedFood.delete({ where: { id: Number(id) } });
+    await client.storedIngredient.delete({ where: { id: Number(id) } });
     return res.status(200).json({ isSuccess: true, message: '성공적으로 삭제되었습니다.', result: {} });
   }
 }

@@ -19,27 +19,27 @@ datasource db {
 }
 
 model User {
-  id          Int          @id @default(autoincrement())
-  nickname    String
-  kakaoId     String       @unique
-  StoredFoods StoredFood[]
+  id                Int                @id @default(autoincrement())
+  nickname          String
+  kakaoId           String             @unique
+  StoredIngredients StoredIngredient[]
 }
 
 // 식재료 카테고리
-model FoodCategory {
-  foodName   String       @id
-  category   String
-  StoredFood StoredFood[]
+model IngredientCategory {
+  ingredientName   String             @id
+  category         String
+  StoredIngredient StoredIngredient[]
 }
 
 // 보관 중인 식재료
-model StoredFood {
-  id             Int             @id @default(autoincrement())
-  FoodCategory   FoodCategory    @relation(fields: [foodName], references: [foodName])
-  foodName       String
-  user           User            @relation(fields: [userId], references: [id])
-  userId         Int
-  storageArea    FoodStorageArea // 보관 장소
-  count          Int // 수량 
-  expirationDate DateTime // 유통기한
+model StoredIngredient {
+  id                 Int                @id @default(autoincrement())
+  IngredientCategory IngredientCategory @relation(fields: [ingredientName], references: [ingredientName])
+  ingredientName     String
+  user               User               @relation(fields: [userId], references: [id])
+  userId             Int
+  storageArea        FoodStorageArea // 보관 장소
+  count              Int // 수량 
+  expirationDate     DateTime // 유통기한
 }
