@@ -1,8 +1,11 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// 음식 카테고리는 프론트에서 json으로 관리
+// 백엔드에서는 신경쓰지 않음
+
 // 식재료 보관 장소
-enum FoodStorageArea {
+enum StorageArea {
   freezer // 냉동실
   fridge // 냉장실
   roomTemp // 실온
@@ -22,24 +25,17 @@ model User {
   id                Int                @id @default(autoincrement())
   nickname          String
   kakaoId           String             @unique
-  StoredIngredients StoredIngredient[]
-}
-
-// 식재료 카테고리
-model IngredientCategory {
-  ingredientName   String             @id
-  category         String
-  StoredIngredient StoredIngredient[]
+  storedIngredients StoredIngredient[]
 }
 
 // 보관 중인 식재료
 model StoredIngredient {
-  id                 Int                @id @default(autoincrement())
-  IngredientCategory IngredientCategory @relation(fields: [ingredientName], references: [ingredientName])
-  ingredientName     String
-  user               User               @relation(fields: [userId], references: [id])
-  userId             Int
-  storageArea        FoodStorageArea // 보관 장소
-  count              Int // 수량 
-  expirationDate     DateTime // 유통기한
+  id             Int         @id @default(autoincrement())
+  name           String
+  category       String
+  user           User        @relation(fields: [userId], references: [id])
+  userId         Int
+  storageArea    StorageArea // 보관 장소
+  count          Int // 수량 
+  expirationDate DateTime // 유통기한
 }
