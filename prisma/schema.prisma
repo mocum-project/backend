@@ -4,6 +4,13 @@
 // 음식 카테고리는 프론트에서 json으로 관리
 // 백엔드에서는 신경쓰지 않음
 
+// 식재료 보관 장소
+enum StorageArea {
+  freezer // 냉동실
+  fridge // 냉장실
+  roomTemp // 실온
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -23,12 +30,12 @@ model User {
 
 // 보관 중인 식재료
 model StoredIngredient {
-  id             Int      @id @default(autoincrement())
+  id             Int         @id @default(autoincrement())
   name           String
   category       String
-  user           User     @relation(fields: [userId], references: [id])
+  user           User        @relation(fields: [userId], references: [id])
   userId         Int
-  storageArea    String // 보관 장소
+  storageArea    StorageArea // 보관 장소
   count          Int // 수량 
   expirationDate DateTime // 유통기한
 }
