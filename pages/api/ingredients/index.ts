@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import withHandler from '@/lib/withHandler';
 
 import client from '@/lib/prismaClient';
-import { StorageArea } from '@prisma/client';
+import StorageArea from '@/types/storageAreaEnum';
 
 async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType>) {
   const { userId } = req.headers;

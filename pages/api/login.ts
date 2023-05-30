@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import AppResponseType from '@/types/appResponseType';
 import client from '@/lib/prismaClient';
-import { User } from '@prisma/client';
 
 // 1. AccessToken으로 카카오 서버에서 회원 정보 가져오기
 // 2. MySQL DB에서 회원 정보 확인 (카카오 아이디)
