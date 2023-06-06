@@ -15,3 +15,5 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 export default withHandler({ methods: ['GET'], handler });
+
+const a = 'AIzaSyA33maNO8yJL1iyey4CuqGFLHBmfNLVn84';
