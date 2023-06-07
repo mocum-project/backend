@@ -22,8 +22,8 @@ interface KakaoUserInfoResponse {
 async function getUserInfoFromKakao(accessToken: string): Promise<KakaoUserInfoResponse> {
   const response = await axios.get<KakaoUserInfoResponse>('https://kapi.kakao.com/v2/user/me', {
     headers: {
-      Authorization: `Bearer ${accessToken}/KakaoAK ${process.env.KAKAO_ADMIN_KEY}`,
-      'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+      Authorization: `Bearer ${accessToken}`,
+      'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
     },
   });
   return response.data;
@@ -59,14 +59,14 @@ function makeJwtToken(payload: string | object) {
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType>) {
-  const { kakaoAccessToken } = req.headers;
+  const { access_token } = req.headers;
   try {
     const {
       id: kakaoId,
       kakao_account: {
         profile: { nickname },
       },
-    } = await getUserInfoFromKakao(kakaoAccessToken as string);
+    } = await getUserInfoFromKakao(access_token as string);
     let user = await getExistUserFromDB(String(kakaoId));
     if (!user) {
       user = await makeNewUserFromDB(String(kakaoId), nickname);
