@@ -4,6 +4,7 @@ import withHandler from '@/lib/withHandler';
 
 import client from '@/lib/prismaClient';
 import { StorageArea } from '@prisma/client';
+import { isNumeric } from '@/lib/utils';
 
 async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType>) {
   const { userId } = req.headers;
@@ -49,7 +50,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType
       typeof name !== 'string' ||
       typeof category !== 'string' ||
       !Object.keys(StorageArea).includes(storageArea) ||
-      typeof count !== 'number' ||
+      !isNumeric(count) ||
       typeof expirationDate !== 'string'
     ) {
       return res.status(400).json({
@@ -64,7 +65,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType
         name,
         category,
         storageArea,
-        count,
+        count: Number(count),
         expirationDate,
       },
     });
@@ -72,11 +73,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType
   } else if (req.method === 'PUT') {
     const { id, name, category, storageArea, count, expirationDate } = req.body;
     if (
-      typeof id !== 'number' ||
+      !isNumeric(id) ||
       typeof name !== 'string' ||
       typeof category !== 'string' ||
       !Object.keys(StorageArea).includes(storageArea) ||
-      typeof count !== 'number' ||
+      !isNumeric(count) ||
       typeof expirationDate !== 'string'
     ) {
       return res.status(400).json({
@@ -90,10 +91,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType
         name,
         category,
         storageArea,
-        count,
+        count: Number(count),
         expirationDate,
       },
-      where: { id },
+      where: { id: Number(id) },
     });
     return res.status(200).json({ isSuccess: true, message: '성공적으로 수정되었습니다.', result: {} });
   } else if (req.method === 'DELETE') {
