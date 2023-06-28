@@ -33,21 +33,18 @@ async function fetchOpenAi(prevChats: PrevChats) {
   return response.data;
 }
 
-async function handler(req: NextApiRequest, res: NextApiResponse<AppResponseType>) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { origin } = req.headers;
   const { prevChats } = JSON.parse(req.body);
-  await NextCors(req, res, {
-    // Options
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-    origin: '*',
-    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-  });
-  const response = await fetchOpenAi(prevChats as PrevChats);
+
+  // const response = await fetchOpenAi(prevChats as PrevChats);
 
   return res.status(200).json({
     isSuccess: true,
     message: '성공',
     result: {
-      content: response.choices[0].message.content,
+      // content: response.choices[0].message.content,
+      ok: true,
     },
   });
 }
