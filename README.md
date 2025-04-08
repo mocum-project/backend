@@ -64,7 +64,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 주제 : 냉장고 재고 관리 & 레시피 추천 (가제 : 냉장고를 부탁해)
 추가/삭제 기능과 유통기한 알람 등을 통해 냉장고 안의 재료들을 관리할 수 있도록 도와주고 해당하는 재료들이 들어가는 레시피를 추천해주는 서비스
 
-*계발계획
+*개발계획
 
 화면구성 총 5개
 
